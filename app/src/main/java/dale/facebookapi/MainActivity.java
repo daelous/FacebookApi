@@ -1,6 +1,7 @@
 package dale.facebookapi;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telecom.Call;
@@ -16,6 +17,10 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.facebook.share.Sharer;
+import com.facebook.share.internal.ShareConstants;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 
 import org.json.JSONObject;
 
@@ -34,20 +39,18 @@ public class MainActivity extends AppCompatActivity {
 
         mLoginButton = (LoginButton) findViewById(R.id.login_button);
         mCallbackManager = CallbackManager.Factory.create();
-        mLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+
+        ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
+                .setContentUrl(Uri.parse("http://naver.com"))
+                .setContentTitle("네이버")
+                .setImageUrl(null)
+                .setContentDescription("ContentDescription")
+                .build();
+
+        ShareDialog shareDialog=new ShareDialog(this);
+        shareDialog.registerCallback(mCallbackManager, new FacebookCallback<Sharer.Result>() {
             @Override
-            public void onSuccess(LoginResult loginResult) {
-                AccessToken accessToken = loginResult.getAccessToken();
-                accessToken.getCurrentAccessToken();
-                accessToken.getUserId();
-                accessToken.getExpires();
-                accessToken.getApplicationId();
-
-                requestMe(accessToken);
-
-                if (accessToken.getToken() != null)
-                    LoginManager.getInstance().logOut();
-
+            public void onSuccess(Sharer.Result result) {
             }
 
             @Override
@@ -61,6 +64,39 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        shareDialog.show(shareLinkContent, ShareDialog.Mode.NATIVE);
+//        mLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+//            @Override
+//            public void onSuccess(LoginResult loginResult) {
+//                AccessToken accessToken = loginResult.getAccessToken();
+//                accessToken.getCurrentAccessToken();
+//                accessToken.getUserId();
+//                accessToken.getExpires();
+//                accessToken.getApplicationId();
+//
+//                requestMe(accessToken);
+//
+//                /*
+//                 로그아웃
+//                 if (accessToken.getToken() != null)
+//                    LoginManager.getInstance().logOut();
+//
+//                 */
+//
+//
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//
+//            }
+//
+//            @Override
+//            public void onError(FacebookException error) {
+//
+//            }
+//        });
+
     }
 
     private void requestMe(AccessToken token) {
@@ -68,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCompleted(JSONObject object, GraphResponse response) {
 
-                
+
             }
         });
 
